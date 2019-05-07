@@ -14,14 +14,17 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark
 import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity() {
+class FaceDetectActivity : AppCompatActivity() {
+
+    private var mPermissionSubscription: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val subscribe = RxPermissions(this)
+        mPermissionSubscription = RxPermissions(this)
             .request(Manifest.permission.CAMERA)
             .subscribe { granted ->
                 if (granted) {
@@ -53,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             .getVisionFaceDetector(options)
         val result = detector.detectInImage(image)
             .addOnSuccessListener {
-                Log.e("fuck", it.toString())
+                Log.e("test", it.toString())
                 for (face in it) {
                     val bounds = face.getBoundingBox()
                     val copy = processBitmap.copy(Bitmap.Config.ARGB_8888, true)
@@ -92,18 +95,16 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            .addOnFailureListener(
-                object : OnFailureListener {
-                    override fun onFailure(@NonNull e: Exception) {
-                        // Task failed with an exception
-                        // ...
-                        Log.e("fuck", e.toString())
-                    }
-                })
+            .addOnFailureListener { e ->
+                // Task failed with an exception
+                // ...
+                Log.e("test", e.toString())
+            }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        mPermissionSubscription?.dispose()
     }
 
 }
