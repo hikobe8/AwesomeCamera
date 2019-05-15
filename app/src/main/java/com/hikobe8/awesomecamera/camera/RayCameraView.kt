@@ -33,6 +33,10 @@ class RayCameraView(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) 
     override fun surfaceCreated(holder: SurfaceHolder?) {
         val camera = Camera.open()
         camera.setPreviewDisplay(holder)
+        camera.setDisplayOrientation(90)
+        camera.parameters = camera.parameters.apply {
+            setPreviewSize(supportedPreviewSizes[6].width, supportedPreviewSizes[6].height)
+        }
         camera.startPreview()
     }
 

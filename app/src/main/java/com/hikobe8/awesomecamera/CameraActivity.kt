@@ -3,8 +3,12 @@ package com.hikobe8.awesomecamera
 import android.Manifest
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.LinearLayout
+import com.hikobe8.awesomecamera.opengl.RayGLCameraView
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.activity_camera.*
+import javax.microedition.khronos.egl.EGLContext
 
 class CameraActivity : AppCompatActivity() {
 
@@ -26,7 +30,18 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-
+        gl_view.mOnGLContextAndTextureAvailableListener =
+            object : RayGLCameraView.OnGLContextAndTextureAvailableListener {
+                override fun onEGLContextAndTextureAvailable(eGLContext: EGLContext?, textureId: Int) {
+                    runOnUiThread {
+                        for (i in 0..2) {
+                            ll_tmp.addView(RayGLCameraView(this@CameraActivity, eGLContext, textureId), LinearLayout.LayoutParams(0, -1).apply {
+                                weight = 1f
+                            })
+                        }
+                    }
+                }
+            }
     }
 
     override fun onDestroy() {
