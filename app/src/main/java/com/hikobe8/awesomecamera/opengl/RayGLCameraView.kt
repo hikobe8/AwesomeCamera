@@ -13,12 +13,16 @@ class RayGLCameraView(context: Context?, attrs: AttributeSet?) : GLSurfaceView(c
 
     private var mEGLContext: EGLContext? = null
     private var mTextureId = -1
+    private var mImageWidth: Int = 0
+    private var mImageHeight: Int = 0
 
     constructor(context: Context?) : this(context = context, attrs = null)
 
-    constructor(context: Context?, eGLContext: EGLContext? = null, textureId: Int) : this(context) {
+    constructor(context: Context?, eGLContext: EGLContext? = null, textureId: Int, imageWidth: Int, imageHeight: Int) : this(context) {
         mEGLContext = eGLContext
         mTextureId = textureId
+        mImageWidth = imageWidth
+        mImageHeight = imageHeight
     }
 
     var mOnGLContextAndTextureAvailableListener: OnGLContextAndTextureAvailableListener? = null
@@ -29,13 +33,15 @@ class RayGLCameraView(context: Context?, attrs: AttributeSet?) : GLSurfaceView(c
         val rayEGLFactory = RayEGLFactory(mEGLContext)
         setEGLContextFactory(rayEGLFactory)
         setRenderer(BasicTextureRenderer(context!!, object : BasicTextureRenderer.OnTextureAvailableListener {
-            override fun onTextureAvailable(textureId: Int) {
+            override fun onTextureAvailable(textureId: Int, imageWidth: Int, imageHeight: Int) {
                 mOnGLContextAndTextureAvailableListener?.onEGLContextAndTextureAvailable(
                     rayEGLFactory.getEGLContext(),
-                    textureId
-                )
+                    textureId,
+                    imageWidth,
+                    imageHeight
+                    )
             }
-        }, mTextureId))
+        }, mTextureId, mImageWidth, mImageHeight))
         renderMode = RENDERMODE_WHEN_DIRTY
 
     }
@@ -43,7 +49,9 @@ class RayGLCameraView(context: Context?, attrs: AttributeSet?) : GLSurfaceView(c
     interface OnGLContextAndTextureAvailableListener {
         fun onEGLContextAndTextureAvailable(
             eGLContext: EGLContext?,
-            textureId: Int
+            textureId: Int,
+            imageWidth: Int,
+            imageHeight: Int
         )
     }
 

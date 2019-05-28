@@ -32,15 +32,26 @@ class CameraActivity : AppCompatActivity() {
     private fun initViews() {
         gl_view.mOnGLContextAndTextureAvailableListener =
             object : RayGLCameraView.OnGLContextAndTextureAvailableListener {
-                override fun onEGLContextAndTextureAvailable(eGLContext: EGLContext?, textureId: Int) {
+                override fun onEGLContextAndTextureAvailable(
+                    eGLContext: EGLContext?,
+                    textureId: Int,
+                    imageWidth: Int,
+                    imageHeight: Int
+                ) {
                     runOnUiThread {
-                        for (i in 0..2) {
-                            ll_tmp.addView(RayGLCameraView(this@CameraActivity, eGLContext, textureId), LinearLayout.LayoutParams(0, -1).apply {
+                        for (i in 0..4) {
+                            ll_tmp.addView(RayGLCameraView(this@CameraActivity,
+                                eGLContext,
+                                textureId,
+                                imageWidth,
+                                imageHeight),
+                                LinearLayout.LayoutParams(0, -1).apply {
                                 weight = 1f
                             })
                         }
                     }
                 }
+
             }
     }
 

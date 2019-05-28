@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.GLUtils
+import android.opengl.Matrix
+import android.util.Log
 import com.hikobe8.awesomecamera.R
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -16,7 +18,9 @@ import javax.microedition.khronos.opengles.GL10
 class BasicTextureRenderer(
     context: Context,
     private val onTextureAvailableListener: OnTextureAvailableListener? = null,
-    private var mTextureId: Int = -1
+    private var mTextureId: Int = -1,
+    private var mImageWidth: Int = 0,
+    private var mImageHeight: Int = 0
 ) : GLSurfaceView.Renderer {
 
     companion object {
@@ -51,6 +55,7 @@ class BasicTextureRenderer(
         mProgram = RayGLUtil.createGLProgram(vertexShader, fragmentShader)
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition")
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "vCoordinate")
+        mMatrixHandle = GLES20.glGetUniformLocation(mProgram, "vMatrix")
 
         mVertextBuffer = ByteBuffer
             .allocateDirect(COORDS.size * COUNT_PER_COORD * 4)
@@ -68,23 +73,50 @@ class BasicTextureRenderer(
             }
         if (mTextureId < 0) {
             mBitmap = BitmapFactory.decodeResource(mContext.resources, R.drawable.man)
+            mImageWidth = mBitmap.width
+            mImageHeight = mBitmap.height
             mTextureId = createTexture()
-            onTextureAvailableListener?.onTextureAvailable(mTextureId)
+            onTextureAvailableListener?.onTextureAvailable(mTextureId, mImageWidth, mImageHeight)
         }
     }
 
     interface OnTextureAvailableListener {
-        fun onTextureAvailable(textureId: Int)
+        fun onTextureAvailable(textureId: Int, imageWidth: Int, imageHeight: Int)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
+        if (width > height) {
+            Matrix.orthoM(mMatrix, 0, -width.toFloat() / height, width.toFloat() / height, -1f, 1f, 0f, 1f)
+            //横屏
+        } else {
+            //竖屏
+            if (mImageWidth > mImageHeight) {
+                //横图
+                Matrix.orthoM(mMatrix, 0, -1f, 1f, -height.toFloat() / width, height.toFloat() / width, 0f, 1f)
+            } else {
+                //竖图, 图片高度充满，宽度缩放
+                Matrix.orthoM(
+                    mMatrix,
+                    0,
+//                    -width/(height.toFloat()/mImageHeight * mImageWidth),
+                    height.toFloat()/(-mImageHeight.toFloat()/mImageWidth),
+                    mImageHeight.toFloat()/mImageWidth,
+//                    width/(height.toFloat()/mImageHeight * mImageWidth),
+                    -1f,
+                    1f,
+                    0f,
+                    1f
+                )
+            }
+        }
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        GLES20.glClearColor(1f, 1f, 1f, 1f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+//        GLES20.glClearColor(1f, 1f, 1f, 1f)
         GLES20.glUseProgram(mProgram)
+        GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMatrix, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId)
         GLES20.glEnableVertexAttribArray(mPositionHandle)
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle)
