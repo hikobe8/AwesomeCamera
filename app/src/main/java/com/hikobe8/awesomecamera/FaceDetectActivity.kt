@@ -3,21 +3,15 @@ package com.hikobe8.awesomecamera
 import android.Manifest
 import android.graphics.*
 import android.os.Bundle
-import android.support.annotation.NonNull
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.vision.face.Landmark
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.face.FirebaseVisionFace
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -188,90 +182,96 @@ class FaceDetectActivity : AppCompatActivity() {
                     //添加点与点之间的path
 
                     //头顶的点辐射出去
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[17])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[0])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[1])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[19])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[20])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[30])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[22])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[23])
-                    path.moveto(pointList[35])
+                    path.moveTo(pointList[35])
                     path.lineTo(pointList[1])
 
                     //左眼上部折线path
-                    path.moveto(pointList[17])
+                    path.moveTo(pointList[17])
                     path.lineTo(pointList[19])
                     path.lineTo(pointList[16])
                     path.lineTo(pointList[18])
                     path.lineTo(pointList[15])
 
                     //右眼上部折线path
-                    path.moveto(pointList[1])
+                    path.moveTo(pointList[1])
                     path.lineTo(pointList[23])
                     path.lineTo(pointList[2])
                     path.lineTo(pointList[24])
                     path.lineTo(pointList[3])
 
                     //下巴折线path
-                    path.moveto(pointList[12])
+                    path.moveTo(pointList[12])
                     path.lineTo(pointList[26])
                     path.lineTo(pointList[11])
                     path.lineTo(pointList[29])
                     path.lineTo(pointList[10])
-                    path.moveto(pointList[29])
+                    path.moveTo(pointList[29])
                     path.lineTo(pointList[9])
-                    path.moveto(pointList[6])
+                    path.moveTo(pointList[6])
                     path.lineTo(pointList[28])
                     path.lineTo(pointList[7])
                     path.lineTo(pointList[29])
                     path.lineTo(pointList[8])
 
                     //左脸折线
-                    path.moveto(pointList[14])
+                    path.moveTo(pointList[14])
                     path.lineTo(pointList[18])
                     path.lineTo(pointList[13])
                     path.lineTo(pointList[21])
                     path.lineTo(pointList[32])
                     path.lineTo(pointList[13])
-                    path.moveto(pointList[20])
+                    path.moveTo(pointList[20])
                     path.lineTo(pointList[30])
                     path.lineTo(pointList[31])
                     path.lineTo(pointList[32])
-                    path.moveto(pointList[12])
+                    path.moveTo(pointList[12])
                     path.lineTo(pointList[32])
                     path.lineTo(pointList[26])
                     path.lineTo(pointList[33])
                     path.lineTo(pointList[27])
 
                     //右脸折线
-                    path.moveto(pointList[4])
+                    path.moveTo(pointList[4])
                     path.lineTo(pointList[24])
                     path.lineTo(pointList[5])
                     path.lineTo(pointList[25])
                     path.lineTo(pointList[34])
                     path.lineTo(pointList[5])
-                    path.moveto(pointList[22])
+                    path.moveTo(pointList[22])
                     path.lineTo(pointList[30])
                     path.lineTo(pointList[31])
                     path.lineTo(pointList[34])
-                    path.moveto(pointList[6])
+                    path.moveTo(pointList[6])
                     path.lineTo(pointList[34])
                     path.lineTo(pointList[28])
                     path.lineTo(pointList[33])
 
                     //鼻尖连线
-                    path.moveto(pointList[31])
+                    path.moveTo(pointList[31])
                     path.lineTo(pointList[33])
 
+                    //眼睛鼻子连线
+                    path.moveTo(pointList[20])
+                    path.lineTo(pointList[32])
+                    path.lineTo(pointList[30])
+                    path.lineTo(pointList[34])
+                    path.lineTo(pointList[22])
 
                     fpl_view.setPointsAndPath(pointList.toArray(Array(0) { PointF() }), path, Runnable { })
                     iv.setImageBitmap(copy)
@@ -289,11 +289,11 @@ class FaceDetectActivity : AppCompatActivity() {
         mPermissionSubscription?.dispose()
     }
 
-    fun Path.moveto(pointF: PointF){
+    private fun Path.moveTo(pointF: PointF){
         moveTo(pointF.x, pointF.y)
     }
 
-    fun Path.lineTo(pointF: PointF){
+    private fun Path.lineTo(pointF: PointF){
         lineTo(pointF.x, pointF.y)
     }
 
